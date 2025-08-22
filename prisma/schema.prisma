@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ROLE {
+  FREELANCER
+  CLIENT
+}
+
+enum STATUS {
+  OPEN
+  CLOSE
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String    @db.VarChar(100)
+  email     String    @unique @db.VarChar(56)
+  password  String    @db.VarChar(100)
+  role      ROLE      @default(FREELANCER)
+  jobs      Job[]     @relation("UserJobs")
+  profiles  Profile[] @relation("UserProfiles")
+  socials   Social[]  @relation("UserSocials")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Profile {
+  id       String @id @default(uuid())
+  title    String @db.VarChar(256)
+  overview String @db.VarChar(2000)
+  userId   String
+  user     User   @relation("UserProfiles", fields: [userId], references: [id])
+}
+
+model Job {
+  id          String @id @default(uuid())
+  title       String @db.VarChar(256)
+  description String
+  category    String
+  status      STATUS @default(OPEN)
+  clientId    String
+  client      User   @relation("UserJobs", fields: [clientId], references: [id])
+
+  @@index([category, title])
+}
+
+model Social {
+  id     String @id @default(uuid())
+  name   String @db.VarChar(30)
+  link   String @db.VarChar(100)
+  userId String
+  user   User   @relation("UserSocials", fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id      String   @id @default(uuid())
+  userId  String
+  token   String
+  expires DateTime
+}
