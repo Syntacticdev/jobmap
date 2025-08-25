@@ -7,14 +7,14 @@ import { Prisma, PrismaClient } from "@prisma/client"
 
 export const errorHandler: ErrorRequestHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof AppError) {
-        return res.status(err.statusCode).json({
+        res.status(err.statusCode).json({
             message: err.message
         });
     }
 
     // ZodError from Zod
     if (err instanceof ZodError) {
-        return res.status(HTTPSTATUS.BAD_REQUEST).json({
+        res.status(HTTPSTATUS.BAD_REQUEST).json({
             message: "Validation Error",
             errors: err.issues.map(issue => ({
                 field: issue.path.join("."),
@@ -22,6 +22,4 @@ export const errorHandler: ErrorRequestHandler = (err: Error, req: Request, res:
             }))
         });
     }
-
-    // Prisma Error
 };

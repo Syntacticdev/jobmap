@@ -14,7 +14,9 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/mjml": "^4.7.4",
     "@types/node": "^24.3.0",
+    "@types/nodemailer": "^7.0.1",
     "prisma": "^6.14.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
@@ -29,6 +31,8 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mjml": "^4.15.3",
+    "nodemailer": "^7.0.5",
     "zod": "^4.0.17"
   }
 }

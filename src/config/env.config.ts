@@ -17,6 +17,10 @@ export const envConfig = () => ({
     },
     RABBITMQ: {
         URL: getEnv("RABBIT_URL", "amqp://user:password@localhost:5672/vhost")
+    },
+    EMAIL: {
+        USER: getEnv("EMAIL_USER", ""),
+        PASS: getEnv("EMAIL_PASS", "")
     }
 })
 
