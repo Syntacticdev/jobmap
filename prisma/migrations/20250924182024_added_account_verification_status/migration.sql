@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "public"."ACCOUNT_STATUS" AS ENUM ('VERIFIED', 'NOT_VERIFIED');
+
+-- AlterTable
+ALTER TABLE "public"."User" ADD COLUMN     "isVerified" "public"."ACCOUNT_STATUS" NOT NULL DEFAULT 'NOT_VERIFIED';

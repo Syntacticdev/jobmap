@@ -13,8 +13,11 @@ import { setupQueues } from "./queues/queueManager";
 import connectRabbitMQ from "./config/rabbitmq.config";
 import { emailConsumer } from "./queues/consumers/email.consumer";
 import { notificationConsumer } from "./queues/consumers/notification.consumer";
-import { sendPostNotification } from "./queues/producers/notification.producer";
 import authRoutes from "./routes/auth.route"
+import jobRoutes from "./routes/job.route"
+import userRoutes from "./routes/user.route"
+import connectRedis from "./config/redis.config";
+import cookieParser from "cookie-parser";
 
 const app = express();
 export const prisma = new PrismaClient();
@@ -22,6 +25,7 @@ app.use(helmet());
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.set('trust proxy', true);
 
@@ -44,6 +48,8 @@ app.get("/debug-sentry", function mainHandler(req, res) {
 // })
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/jobs", jobRoutes)
 
 // First
 app.use("/", asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -58,12 +64,6 @@ app.use("/", asyncHandler(async (req: Request, res: Response, next: NextFunction
 Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
 
-
-
-
-
-
-
 (async () => {
     try {
         await setupQueues(); // Ensure all queues and exchanges are declared
@@ -73,10 +73,11 @@ app.use(errorHandler);
         console.log("✅ RabbitMQ setup complete. Ready to process messages.");
     } catch (err) {
         console.error("❌ Error connecting to RabbitMQ:", err);
-        // Optionally, exit the process if RabbitMQ is critical
-        // process.exit(1);
+        process.exit(1);
     }
 })();
+
+connectRedis();
 
 app.listen(Env.PORT, () => {
     console.log(`Server is running on port ${Env.PORT}`);

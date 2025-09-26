@@ -1,19 +1,19 @@
 import connectRabbitMQ from "../../config/rabbitmq.config";
-import { payload } from "../../types/services";
+// import { payload } from "../../types/services";
 
 
-export async function sendEmailNotification(eventType: string, payload: payload) {
-
+export async function sendEmailNotificationQueue(eventType: string, payload: any) {
     const channel = await connectRabbitMQ();
 
     channel.publish(
         "email.exchange",
         eventType,
-        Buffer.from(JSON.stringify(payload)),
+        Buffer.from(JSON.stringify({ eventType, payload })),
         { persistent: true }
     );
-    console.log("📧 Sent email notification:", payload);
+    console.log("📧 Sent email notification:", { eventType, payload });
 }
+
 
 
 // ex.

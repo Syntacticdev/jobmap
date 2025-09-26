@@ -1,77 +1,50 @@
 import transporter from "../config/email.config";
-import getOtp from "../utils/get-otp";
-import mjml2html from "mjml";
-import fs from "fs";
-import path from "path";
+import { getAuthCodeTemplate } from "./templates/authcode.template";
+import { getWelcomeEmailTemplate } from "./templates/welcome.template";
+import { getPasswordResetTemplate } from "./templates/passwordreset.template";
+import { getWeeklySummaryTemplate, JobInfo, JobUser } from "./templates/weeklysummary.template";
+
+const sendMail = async (to: string, subject: string, mailTemp: () => string) => {
+    const info = await transporter.sendMail({
+        from: process.env.EMAIL_FROM,
+        to,
+        subject,
+        html: mailTemp()
+    });
+    return info;
+};
 
 export default {
 
-    sendAuthCode: async (param: { to: string; otp: number }) => {
-        let { otp, expirationTime } = getOtp();
-
-
-        // let mailGenerator = new Mailgen({
-        //     theme: 'default',
-        //     product: {
-        //         // Appears in header & footer of e-mails
-        //         name: 'MyGuy',
-        //         link: 'https://mailgen.js/',
-        //         // Optional product logo
-        //         logo: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
-        //     }
-        // });
-
-        // let email = {
-        //     body: {
-        //         signature: false,
-        //         title: 'Verification OTP',
-        //         intro: param.otp,
-        //         action: {
-        //             instructions: 'To verify your account, please click here:',
-        //             button: {
-        //                 color: '#22BC66', // Optional action button color
-        //                 text: 'Verify your account',
-        //                 link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
-        //             }
-        //         },
-        //         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
-        //     }
-        // };
-
-        // // Generate an HTML email with the provided contents
-        // let emailBody = mailGenerator.generate(email);
-
-
-        // const info = await transporter.sendMail({
-        //     from: process.env.PASS,
-        //     to: param.to,
-        //     subject: "OTP Verification - MyGuy", // 
-        //     text: "Verify your account",
-        //     html: emailBody
-        // });
-
-        // console.log("Message sent: %s", info.messageId);
-
-
-
-    },
-
-    async sendPasswordResetCode() {
-
-    },
-
     async sendWelcomeEmail(to: string, name: string) {
-        const templatePath = path.join(__dirname, "templates", "welcome.mjml");
-        let mjmlTemplate = fs.readFileSync(templatePath, "utf-8");
-        mjmlTemplate = mjmlTemplate.replace("{{name}}", name);
-        const { html } = mjml2html(mjmlTemplate);
+        const info = await sendMail(to, "Welcome to JobMap!", () => {
+            return getWelcomeEmailTemplate({ email: to, name });
+        });
 
-        const info = await transporter.sendMail({
-            from: 'no-reply@jobmap.com',
-            to,
-            subject: 'Welcome to JobMap!',
-            html
+        console.log("Message sent: %s", info.messageId);
+
+    },
+
+    sendAuthCode: async (param: { to: string; otp: number, expirationMinutes: number }) => {
+
+        const info = await sendMail(param.to, "Your Authentication Code", () => {
+            return getAuthCodeTemplate({ email: param.to, otp: param.otp, expirationMinutes: param.expirationMinutes });
+        });
+        console.log("Message sent: %s", info.messageId);
+    },
+
+    async sendPasswordResetCode(param: { to: string; otp: number, expirationMinutes: number }) {
+        const info = await sendMail(param.to, "Your Password Reset Code", () => {
+            return getPasswordResetTemplate({ email: param.to, code: param.otp, expirationMinutes: param.expirationMinutes });
+        });
+        console.log("Message sent: %s", info.messageId);
+    },
+
+    async sendWeeklySummaryReport(param: { to: JobUser; summary: JobInfo[] }) {
+        const info = await sendMail(param.to.email, "Your Weekly Summary Report", () => {
+            return getWeeklySummaryTemplate({ user: param.to, jobs: param.summary });
         });
         console.log("Message sent: %s", info.messageId);
     }
+
 }

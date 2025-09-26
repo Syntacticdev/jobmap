@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/amqplib": "^0.10.7",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
@@ -26,13 +27,19 @@
     "@sentry/node": "^10.5.0",
     "@upstash/redis": "^1.35.3",
     "amqplib": "^0.10.8",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mjml": "^4.15.3",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
+    "redis": "^5.8.2",
+    "winston": "^3.17.0",
     "zod": "^4.0.17"
   }
 }

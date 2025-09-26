@@ -1,0 +1,36 @@
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-12T14:33:55.617Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-12T14:34:00.650Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-12T14:34:24.083Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-12T14:34:36.262Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-12T14:34:36.907Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T13:51:08.605Z"}
+{"level":"warn","message":"User with email already exists","service":"Knowtify","timestamp":"2025-09-24T13:51:08.981Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T13:52:04.872Z"}
+{"level":"warn","message":"User with email already exists","service":"Knowtify","timestamp":"2025-09-24T13:52:04.894Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T13:53:29.255Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T13:53:29.664Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T14:11:02.810Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T14:11:03.308Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T14:15:07.684Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T14:15:08.004Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T20:00:53.819Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T20:01:02.425Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T20:01:03.159Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T20:06:01.689Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T20:06:01.922Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T20:22:10.522Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T20:22:11.039Z"}
+{"level":"info","message":"Registration endpoint hits..","service":"Knowtify","timestamp":"2025-09-24T20:50:02.038Z"}
+{"level":"info","message":"User successfully created","service":"Knowtify","timestamp":"2025-09-24T20:50:02.656Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T11:34:00.527Z"}
+{"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-09-25T11:34:00.905Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T11:34:11.007Z"}
+{"level":"warn","message":"Invalid password","service":"Knowtify","timestamp":"2025-09-25T11:34:11.322Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T11:34:15.098Z"}
+{"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-09-25T11:34:15.337Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T12:32:30.167Z"}
+{"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-09-25T12:32:30.632Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T12:46:54.815Z"}
+{"level":"warn","message":"Invalid password","service":"Knowtify","timestamp":"2025-09-25T12:46:55.153Z"}
+{"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-09-25T12:46:59.840Z"}
+{"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-09-25T12:47:00.198Z"}
