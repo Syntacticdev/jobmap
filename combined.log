@@ -43,3 +43,5 @@
 {"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-10-02T00:05:58.244Z"}
 {"level":"info","message":"Login endpoint hits..","service":"Knowtify","timestamp":"2025-10-02T00:06:09.047Z"}
 {"level":"info","message":"User successfully logged in","service":"Knowtify","timestamp":"2025-10-02T00:06:09.257Z"}
+{"level":"info","message":"Redis connected","service":"Knowtify","timestamp":"2025-10-02T00:09:29.911Z"}
+{"level":"info","message":"Redis connected","service":"Knowtify","timestamp":"2025-10-02T00:09:29.895Z"}
