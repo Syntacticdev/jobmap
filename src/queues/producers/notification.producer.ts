@@ -1,5 +1,6 @@
 import connectRabbitMQ from "../../config/rabbitmq.config";
 import { notification } from "../../types/services";
+import logger from "../../utils/logger";
 
 
 export async function sendPostNotification(eventType: string, payload: notification) {
@@ -12,13 +13,5 @@ export async function sendPostNotification(eventType: string, payload: notificat
         Buffer.from(JSON.stringify({ eventType, payload })),
         { persistent: true }
     );
-    console.log(`📤 notification sent`);
-    // console.log(`📤 Sent notification [${eventType}]:`, payload);
+    logger.info(`Email Notification Sent -> Event:${eventType}`)
 }
-
-
-// ex.
-
-// publishNotification("post.created", { postId: 123, userId: 45 });
-// publishNotification("post.liked", { postId: 123, userId: 78 });
-

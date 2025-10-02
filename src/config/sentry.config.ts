@@ -1,7 +1,8 @@
 import * as Sentry from "@sentry/node"
+import { Env } from "./env.config";
 
 Sentry.init({
-    dsn: "https://b3bc84ac9cf2bc4d41a1b0d50d0ce98f@o4509877843197952.ingest.de.sentry.io/4509877853356112",
+    dsn: Env.SENTRY_DNS,
 
     // Setting this option to true will send default PII data to Sentry.
     // For example, automatic IP address collection on events

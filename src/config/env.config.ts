@@ -1,27 +1,29 @@
+import "dotenv/config"
 import { getEnv } from "../utils/get-env";
 
 
 export const envConfig = () => ({
-    PORT: getEnv("PORT", "5000"),
-    NODE_ENV: getEnv("NODE_ENV", "development"),
+    PORT: getEnv("PORT"),
+    NODE_ENV: getEnv("NODE_ENV"),
+    DATABASE_URL: getEnv("DATABASE_URL"),
 
     JWT: {
-        SECRET: getEnv("JWT_SECRET", "jwt_secret"),
-        REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET", "refresh_secret")
+        SECRET: getEnv("JWT_SECRET"),
+        REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET")
     },
-    UPSTASH: {
-        REDIS: {
-            URL: getEnv("UPSTASH_REDIS_REST_URL", ""),
-            TOKEN: getEnv("UPSTASH_REDIS_REST_TOKEN", ""),
-        }
+
+    REDIS: {
+        URL: getEnv("REDIS_URL"),
     },
+
     RABBITMQ: {
-        URL: getEnv("RABBIT_URL", "amqp://user:password@localhost:5672/vhost")
+        URL: getEnv("RABBIT_URL")
     },
     EMAIL: {
-        USER: getEnv("EMAIL_USER", ""),
-        PASS: getEnv("EMAIL_PASS", "")
-    }
+        USER: getEnv("EMAIL_USER"),
+        PASS: getEnv("EMAIL_PASS")
+    },
+    SENTRY_DNS: getEnv("SENTRY_DNS")
 })
 
 export const Env = envConfig()

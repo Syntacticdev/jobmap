@@ -12,10 +12,15 @@ import { redisClient } from "../config/redis.config";
 // create job
 export const createjob = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     jobSchema.parse(req.body);
+    const { title, description, offerMin, offerMax } = req.body
     const jobData = await prisma.job.create({
         data: {
-            ...req.body,
-            authorId: req.user.id
+            title,
+            description,
+            offerMin: Number(offerMin),
+            offerMax: Number(offerMax),
+            clientId: req.user.id,
+            role: "Developer"
         }
     })
 
@@ -25,7 +30,7 @@ export const createjob = asyncHandler(async (req: Request, res: Response, next: 
     res.status(HTTPSTATUS.CREATED).json({
         success: true,
         message: "job created successfully",
-        data: jobData
+        // data: jobData
     })
 
 })
@@ -173,20 +178,9 @@ export const getAlljobs = asyncHandler(async (req: Request, res: Response, next:
 })
 
 
-export const getUserjobs = async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.params.userId;
-    if (!userId) {
-        throw new BadRequestException("User Id is required");
-    }
-    const userExist = await prisma.user.findUnique({
-        where: { id: userId }
-    });
-
-    if (!userExist) {
-        throw new BadRequestException("User Not Found")
-    }
-
-    const cachedjobs = await redisClient.get(`jobs:user:${userId}`)
+export const getClientjobs = async (req: Request, res: Response, next: NextFunction) => {
+    const clientId = req.user.id
+    const cachedjobs = await redisClient.get(`${clientId}:jobs`)
 
     if (cachedjobs) {
         res.status(200).json({
@@ -197,19 +191,11 @@ export const getUserjobs = async (req: Request, res: Response, next: NextFunctio
     }
     const jobs = await prisma.job.findMany({
         where: {
-            clientId: userId
+            clientId
         },
-        include: {
-            client: {
-                select: {
-                    id: true,
-                    name: true
-                }
-            }
-        }
     })
 
-    await redisClient.set(`jobs:user:${userId}`, JSON.stringify(jobs), { expiration: { type: "EX", value: 3600 } })
+    await redisClient.set(`${clientId}:jobs`, JSON.stringify(jobs), { expiration: { type: "EX", value: 3600 } })
 
     res.status(200).json({
         success: true,
@@ -234,7 +220,7 @@ export const expiredOldJobs = async () => {
         }
     })
 
-    console.log(`🔒 Closed ${result.count} old jobs`);
+    console.log(`Closed ${result.count} old jobs`);
 };
 
 export const weeklyReport = async () => {
@@ -259,6 +245,6 @@ export const weeklyReport = async () => {
         // });
     }
 
-    console.log(`📩 Weekly summary queued for ${clients.length} clients`);
+    console.log(`Weekly summary queued for ${clients.length} clients`);
 }
 

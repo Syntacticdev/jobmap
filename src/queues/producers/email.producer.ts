@@ -1,6 +1,5 @@
+import { logger } from "@sentry/node";
 import connectRabbitMQ from "../../config/rabbitmq.config";
-// import { payload } from "../../types/services";
-
 
 export async function sendEmailNotificationQueue(eventType: string, payload: any) {
     const channel = await connectRabbitMQ();
@@ -11,12 +10,5 @@ export async function sendEmailNotificationQueue(eventType: string, payload: any
         Buffer.from(JSON.stringify({ eventType, payload })),
         { persistent: true }
     );
-    console.log("📧 Sent email notification:", { eventType, payload });
+    logger.info(`Email Notification Sent -> Event:${eventType}`)
 }
-
-
-
-// ex.
-
-// publishEmail("email.auth_code", { email: "user@mail.com", code: "123456" });
-// publishEmail("email.password_reset", { email: "user@mail.com", resetToken: "abcd" });

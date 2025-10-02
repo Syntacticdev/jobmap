@@ -41,7 +41,7 @@ model User {
   id           String        @id @default(uuid())
   name         String?       @db.VarChar(100)
   email        String        @unique @db.VarChar(56)
-  gender       String
+  gender       String?
   password     String        @db.VarChar(100)
   otpHash      String?
   otpPurpose   OTP_PURPOSE?

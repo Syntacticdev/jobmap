@@ -28,6 +28,9 @@ export const getUser = asyncHandler(async (req: Request, res: Response, next: Ne
     }
     const user = await prisma.user.findUnique({
         where: { id: userId },
+        omit: {
+            password: true
+        }
     });
 
     if (!user) {

@@ -1,6 +1,5 @@
 import "./config/sentry.config"
-import "dotenv/config"
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, application } from 'express';
 import helmet from 'helmet';
 import * as Sentry from "@sentry/node"
 import cors from "cors"
@@ -16,9 +15,11 @@ import { notificationConsumer } from "./queues/consumers/notification.consumer";
 import authRoutes from "./routes/auth.route"
 import jobRoutes from "./routes/job.route"
 import userRoutes from "./routes/user.route"
+import applicationRoute from "./routes/application.route"
 import connectRedis from "./config/redis.config";
 import cookieParser from "cookie-parser";
 
+const PORT = Env.PORT || 3000
 const app = express();
 export const prisma = new PrismaClient();
 app.use(helmet());
@@ -34,22 +35,10 @@ app.get("/debug-sentry", function mainHandler(req, res) {
     throw new Error("My first Sentry error!");
 });
 
-// app.post("/post/create", async (req, res) => {
-//     const { userId, title, body } = req.body
-//     const payload = {
-//         userId,
-//         payload: {
-//             title,
-//             body
-//         }
-//     }
-//     await sendPostNotification("post.create", payload);
-//     res.status(201).json({ message: "Post created successfully" });
-// })
-
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes)
+app.use("/api/applications", applicationRoute)
 
 // First
 app.use("/", asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -58,9 +47,6 @@ app.use("/", asyncHandler(async (req: Request, res: Response, next: NextFunction
     })
 }))
 
-// Middle
-
-// Last Hit
 Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
 
@@ -70,16 +56,16 @@ app.use(errorHandler);
         await connectRabbitMQ();
         await emailConsumer();
         await notificationConsumer();
-        console.log("✅ RabbitMQ setup complete. Ready to process messages.");
+        console.log("RabbitMQ setup complete. Ready to process messages.");
     } catch (err) {
-        console.error("❌ Error connecting to RabbitMQ:", err);
+        console.error("Error connecting to RabbitMQ:", err);
         process.exit(1);
     }
 })();
 
 connectRedis();
 
-app.listen(Env.PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${Env.PORT}`);
 
 });

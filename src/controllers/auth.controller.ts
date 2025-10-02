@@ -72,10 +72,11 @@ export const login = asyncHandler(async (req: Request, res: Response, next: Next
         throw new BadRequestException("Invalid password")
     }
     logger.info("User successfully logged in")
+    const { accessToken } = await generateToken({ userId: user.id, email: user.email }, res)
     res.status(HTTPSTATUS.OK).json({
         success: true,
         message: "User successfully logged in",
-        token: generateToken({ userId: user.id, email: user.email }, res),
+        token: accessToken,
         data: {
             user: {
                 id: user.id,
@@ -140,13 +141,9 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response, next: 
 
     const hashedOtp = hashOtp(otp);
 
-    if (
-        !user.otpHash ||
-        user.otpHash !== hashedOtp ||
-        user.otpPurpose !== otpPurpose ||
-        !user.otpExpiresAt ||
-        user.otpExpiresAt < new Date() ||
-        user.otpUsed
+    if (!user.otpHash || user.otpHash !== hashedOtp ||
+        user.otpPurpose !== otpPurpose || !user.otpExpiresAt ||
+        user.otpExpiresAt < new Date() || user.otpUsed
     ) {
         throw new UnAuthorizedException("Invalid or expired OTP")
     }
@@ -261,8 +258,8 @@ export const refresh = asyncHandler(async (req: Request, res: Response, next: Ne
     })
     if (!storedToken) throw new UnAuthorizedException("Invalid refresh token")
 
-    // Check if token is expired
-    if (storedToken.expires < new Date()) {
+    // Check if token is expired and Remove from the database
+    if (storedToken && storedToken.expires < new Date()) {
         await prisma.refreshToken.delete({
             where: {
                 token: oldRefreshToken
@@ -271,13 +268,11 @@ export const refresh = asyncHandler(async (req: Request, res: Response, next: Ne
         throw new UnAuthorizedException("Token has expired")
     }
 
-
     const decoded = jwt.verify(oldRefreshToken, Env.JWT.REFRESH_SECRET);
     if (typeof decoded !== 'object' || !('userId' in decoded)) {
         throw new UnAuthorizedException("Invalid token payload");
     }
     const tokenData = decoded as tokenProps;
-    // const tokenData = jwt.verify(oldRefreshToken, Env.JWT.REFRESH_SECRET) as refreshToken;
 
     const user = await prisma.user.findFirst({
         where: {
@@ -287,17 +282,10 @@ export const refresh = asyncHandler(async (req: Request, res: Response, next: Ne
     if (!user) throw new UnAuthorizedException("Invalid token")
 
     // Generate new tokens
-    const { accessToken, refreshToken } = await generateToken({ userId: tokenData.userId, email: tokenData.email }, res)
+    const { accessToken } = await generateToken({ userId: tokenData.userId, email: tokenData.email }, res)
     // Revoke old refresh token
     await prisma.refreshToken.delete({ where: { token: oldRefreshToken } })
 
-    // Return both tokens
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: false, // true in production (HTTPS)
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
     res.json({ accessToken, message: "Token successfully refreshed" });
 })
 

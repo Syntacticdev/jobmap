@@ -20,25 +20,26 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
         return res.status(HTTPSTATUS.UNAUTHORIZED).send({ auth: false, message: "Invalid token provided." })
     }
 
-    try {
-        const payload: any = jwt.verify(token, Env.JWT.SECRET, (err: any, decoded: any) => {
-            if (err) {
-                throw new UnAuthorizedException('Invalid token provided');
-            }
-            return decoded;
-        });
-
-        const user = await prisma.user.findFirst({
-            where: {
-                id: payload.userId
-            }
-        })
-        if (!user) {
-            throw new NotFoundException('User not found');
+    const payload: any = jwt.verify(token, Env.JWT.SECRET, (err: any, decoded: any) => {
+        if (err) {
+            throw new UnAuthorizedException('Invalid or Expired token provided');
         }
-        req.user = user;
-        next();
-    } catch (error) {
-        throw new UnAuthorizedException("User is not authorized")
+        return decoded;
+    });
+
+    const user = await prisma.user.findFirst({
+        where: {
+            id: payload.userId
+        }
+    })
+    if (!user) {
+        throw new NotFoundException('User not found');
     }
+
+    if (!user.isVerified) {
+        throw new UnAuthorizedException("User Not Verified")
+    }
+    req.user = user;
+    next();
+
 }

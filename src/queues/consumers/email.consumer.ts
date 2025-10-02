@@ -1,14 +1,13 @@
+import { logger } from "@sentry/node";
 import connectRabbitMQ from "../../config/rabbitmq.config";
 import emailService from "../../services/email.service";
 
 export async function emailConsumer() {
     const channel = await connectRabbitMQ();
-
-    console.log("✅ Email consumers started");
     channel.consume("notification.email.queue", async (message) => {
         if (!message) return
         const { eventType, payload } = JSON.parse(message.content.toString());
-        console.log(`📧 Received email notification [${eventType}]:`, payload);
+        console.log(`Received email notification [${eventType}]:`, payload);
 
         // Handle different email events
         switch (eventType) {
@@ -24,8 +23,11 @@ export async function emailConsumer() {
             case "email.job_weekly_summary_report":
                 // await emailService.sendWeekSummaryReport();
                 break;
+            case "email.job_approval":
+                await emailService.sendApprovalEMail(payload)
+                break;
             default:
-                console.warn(`Unknown email event type: ${eventType}`);
+                logger.warn(`Unknown email event type: ${eventType}`);
         }
 
         channel.ack(message);

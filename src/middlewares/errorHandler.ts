@@ -7,6 +7,7 @@ import { Prisma, PrismaClient } from "@prisma/client"
 
 export const errorHandler: ErrorRequestHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof AppError) {
+        console.log(err)
         res.status(err.statusCode).json({
             message: err.message
         });

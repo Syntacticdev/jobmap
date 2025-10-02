@@ -1,5 +1,6 @@
 import amqp from "amqplib"
 import { Env } from "../config/env.config"
+import { logger } from "@sentry/node";
 
 
 const configs = {
@@ -26,20 +27,20 @@ export async function setupQueues() {
 
         for (const ex of configs.exchanges) {
             await channel.assertExchange(ex.name, ex.type, { durable: true })
-            console.log(`✅ Exchange declared: ${ex.name} (${ex.type})`);
+            logger.info(`Exchange declared: ${ex.name} (${ex.type})`);
         }
 
         for (const queue of configs.queues) {
             await channel.assertQueue(queue.name, { durable: true })
             await channel.bindQueue(queue.name, queue.exchange, queue.routingKey)
-            console.log(`✅ Queue declared & bound: ${queue.name} -> ${queue.exchange} (${queue.routingKey})`);
+            logger.info(`Queue declared & bound: ${queue.name} -> ${queue.exchange} (${queue.routingKey})`);
         }
 
-        console.log("Connected to RabbitMQ")
+        logger.info("Connected to RabbitMQ")
 
         return { channel }
     } catch (error) {
-        console.error("❌ RabbitMQ initialization failed:", error);
+        logger.error(`RabbitMQ initialization failed:${error}`);
     }
 }
 
