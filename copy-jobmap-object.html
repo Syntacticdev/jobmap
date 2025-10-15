@@ -1,25 +1,65 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Copy JobMap Backend Object</title>
     <style>
-      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 24px; background:#f7fafc }
-      .container { max-width:900px; margin:0 auto }
-      textarea { width:100%; height:420px; font-family: monospace; font-size:13px; padding:12px; border-radius:6px; border:1px solid #ddd; box-sizing:border-box }
-      .controls { display:flex; gap:8px; margin-top:12px }
-      button { padding:8px 14px; border-radius:6px; border:0; background:#3182ce; color:white; cursor:pointer }
-      button.secondary { background:#4a5568 }
-      .msg { margin-left:12px; color: #2f855a }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>JobMap Backend object (click Copy)</h1>
-      <p>Click the button to copy the TypeScript object to your clipboard. You can paste it into your data file.</p>
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            padding: 24px;
+            background: #f7fafc
+        }
 
-      <textarea id="obj">export const JobMapBackend: BackendProject = {
+        .container {
+            max-width: 900px;
+            margin: 0 auto
+        }
+
+        textarea {
+            width: 100%;
+            height: 420px;
+            font-family: monospace;
+            font-size: 13px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-sizing: border-box
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px
+        }
+
+        button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 0;
+            background: #3182ce;
+            color: white;
+            cursor: pointer
+        }
+
+        button.secondary {
+            background: #4a5568
+        }
+
+        .msg {
+            margin-left: 12px;
+            color: #2f855a
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>JobMap Backend object (click Copy)</h1>
+        <p>Click the button to copy the TypeScript object to your clipboard. You can paste it into your data file.</p>
+
+        <textarea id="obj">export const JobMapBackend: BackendProject = {
   name: "JobMap API",
   slug: "jobmap-api",
   description: "Backend for JobMap — a freelance/job marketplace providing job posting, applications, user authentication, email notifications, and background processing using RabbitMQ and Redis.",
@@ -97,37 +137,38 @@
 };
 </textarea>
 
-      <div class="controls">
-        <button id="copyBtn">Copy</button>
-        <button id="selectBtn" class="secondary">Select All</button>
-        <div id="msg" class="msg" aria-live="polite"></div>
-      </div>
+        <div class="controls">
+            <button id="copyBtn">Copy</button>
+            <button id="selectBtn" class="secondary">Select All</button>
+            <div id="msg" class="msg" aria-live="polite"></div>
+        </div>
     </div>
 
     <script>
-      const textarea = document.getElementById('obj');
-      const copyBtn = document.getElementById('copyBtn');
-      const selectBtn = document.getElementById('selectBtn');
-      const msg = document.getElementById('msg');
+        const textarea = document.getElementById('obj');
+        const copyBtn = document.getElementById('copyBtn');
+        const selectBtn = document.getElementById('selectBtn');
+        const msg = document.getElementById('msg');
 
-      copyBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(textarea.value);
-          msg.textContent = 'Copied to clipboard';
-          setTimeout(() => msg.textContent = '', 2500);
-        } catch (err) {
-          // fallback
-          textarea.select();
-          document.execCommand('copy');
-          msg.textContent = 'Copied to clipboard';
-          setTimeout(() => msg.textContent = '', 2500);
-        }
-      });
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(textarea.value);
+                msg.textContent = 'Copied to clipboard';
+                setTimeout(() => msg.textContent = '', 2500);
+            } catch (err) {
+                // fallback
+                textarea.select();
+                document.execCommand('copy');
+                msg.textContent = 'Copied to clipboard';
+                setTimeout(() => msg.textContent = '', 2500);
+            }
+        });
 
-      selectBtn.addEventListener('click', () => {
-        textarea.focus();
-        textarea.select();
-      });
+        selectBtn.addEventListener('click', () => {
+            textarea.focus();
+            textarea.select();
+        });
     </script>
-  </body>
+</body>
+
 </html>
