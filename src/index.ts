@@ -18,7 +18,8 @@ import userRoutes from "./routes/user.route"
 import applicationRoute from "./routes/application.route"
 import connectRedis from "./config/redis.config";
 import cookieParser from "cookie-parser";
-
+import swaggerDocument from './docs/jobmap-api-docs.json';
+import swaggerUi from "swagger-ui-express";
 const PORT = Env.PORT || 3000
 const app = express();
 export const prisma = new PrismaClient();
@@ -27,13 +28,16 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.set('trust proxy', true);
+
 
 
 app.get("/debug-sentry", function mainHandler(req, res) {
     throw new Error("My first Sentry error!");
 });
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

@@ -1,0 +1,559 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "JobMap API",
+    "description": "A comprehensive job marketplace API that connects job seekers with employers. This RESTful API provides complete functionality for user authentication, job management, application processing, and user profile management.\n\n## Key Features\n\n### 🔐 Authentication & Security\n- User registration and login with email/password\n- OTP-based email verification for account activation\n- Secure password reset functionality\n- JWT token-based authentication with refresh token support\n- Role-based access control (Admin, Client, User)\n\n### 👥 User Management\n- Complete user profile management\n- User account creation, updates, and deletion\n- Secure user data handling with proper authorization\n\n### 💼 Job Management\n- Create, read, update, and delete job postings\n- Job listings with detailed descriptions and salary ranges\n- Client-specific job management dashboard\n- Public job browsing and filtering\n\n### 📋 Application Processing\n- Job application submission with CV and cover letter\n- Application status tracking and updates\n- Admin approval workflow for applications\n- Client-specific application management\n\n### 🔧 Additional Features\n- Comprehensive error handling and logging\n- Rate limiting for API protection\n- Sentry integration for error monitoring\n- Email notifications and templates\n- Queue-based background job processing\n\n## API Structure\n\nThe API follows RESTful principles with clear endpoint organization:\n- `/api/auth/*` - Authentication and user verification\n- `/api/users/*` - User profile management\n- `/api/jobs/*` - Job posting and management\n- `/api/applications/*` - Job application processing\n\n## Authentication\n\nMost endpoints require authentication via JWT tokens passed in the Authorization header. Public endpoints include user registration, login, and public job listings.\n\n## Rate Limiting\n\nAPI endpoints are protected with rate limiting to ensure fair usage and system stability.\n\n## Error Handling\n\nThe API provides comprehensive error responses with appropriate HTTP status codes and descriptive error messages.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/debug-sentry": {
+      "get": {
+        "summary": "Trigger a Sentry test error (debug only)",
+        "description": "Throws a test error to validate Sentry error monitoring integration.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Authenticate user and return an access token",
+        "description": "Authenticates a user with email and password. Returns a JWT access token and sets a refresh token cookie.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "user@example.com"
+                },
+                "password": {
+                  "example": "Passw0rd!"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Create a new user account",
+        "description": "Registers a new user account and emails a one-time verification code (OTP) for account activation.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "newuser@example.com"
+                },
+                "password": {
+                  "example": "StrongPass123!"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/auth/verify-account": {
+      "post": {
+        "summary": "Verify a newly registered account using OTP",
+        "description": "Marks the user account as verified after confirming the OTP sent to the user's email during registration.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "newuser@example.com"
+                },
+                "otp": {
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "summary": "Refresh access token using refresh token cookie",
+        "description": "Generates a new access token if a valid refresh token cookie is present. The old refresh token is revoked.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/auth/request-otp": {
+      "post": {
+        "summary": "Request an OTP for account verification or password reset",
+        "description": "Sends a one-time passcode (OTP) to the user's email. Set `otpPurpose` to `ACCOUNT_VERIFICATION` or `PASSWORD_RESET`.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "user@example.com"
+                },
+                "otpPurpose": {
+                  "example": "PASSWORD_RESET"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/verify-otp": {
+      "post": {
+        "summary": "Verify an OTP for a given purpose",
+        "description": "Validates the OTP for the specified purpose. For `ACCOUNT_VERIFICATION`, the account is marked as verified; for `PASSWORD_RESET`, the OTP is marked used.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "user@example.com"
+                },
+                "otp": {
+                  "example": "123456"
+                },
+                "otpPurpose": {
+                  "example": "ACCOUNT_VERIFICATION"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "summary": "Reset password using a verified OTP",
+        "description": "Resets the user's password after verifying the OTP issued for `PASSWORD_RESET`. OTPs expire after 10 minutes.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "user@example.com"
+                },
+                "newPassword": {
+                  "example": "NewStrongPass123!"
+                },
+                "otp": {
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/": {
+      "get": {
+        "summary": "List all users (admin only)",
+        "description": "Returns a list of all users. Requires `Authorization: Bearer <accessToken>` and admin role.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update current user's profile",
+        "description": "Updates the authenticated user's profile fields. Requires `Authorization: Bearer <accessToken>`.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Get a user by ID",
+        "description": "Fetches a single user's public profile by ID. Uses caching for performance.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user (self or admin)",
+        "description": "Deletes the user by ID. Only the user themself or an admin can perform this action. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/jobs/": {
+      "post": {
+        "summary": "Create a new job (client or admin)",
+        "description": "Creates a job posting with title, description, and salary range. Requires client or admin role.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "example": "Senior Backend Developer"
+                },
+                "description": {
+                  "example": "We are looking for a Senior Backend Developer with Node.js experience."
+                },
+                "offerMin": {
+                  "example": 60000
+                },
+                "offerMax": {
+                  "example": 90000
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "summary": "List all open jobs",
+        "description": "Returns a list of jobs. Includes client info for each job.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/jobs/{id}": {
+      "put": {
+        "summary": "Update a job by ID (owner only)",
+        "description": "Updates a job posting. Only the owning client can update their job. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "summary": "Get a job by ID",
+        "description": "Fetches details of a specific job by ID. Uses caching for performance.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a job (owner or admin)",
+        "description": "Deletes a job by ID. Only the owning client or an admin can delete a job. Requires authentication.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/jobs/client/jobs": {
+      "get": {
+        "summary": "List jobs created by the authenticated client",
+        "description": "Returns all jobs created by the current client user. Requires client role.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/apply/{jobId}": {
+      "post": {
+        "summary": "Apply to a job",
+        "description": "Submits an application to a job posting. Requires authentication.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cv": {
+                  "example": "https://cdn.example.com/cv/john-doe.pdf"
+                },
+                "coverLetter": {
+                  "example": "I am excited to apply for this role because..."
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/applications/{id}/approve": {
+      "put": {
+        "summary": "Approve an application and close the job",
+        "description": "Approves a specific application, closes the job, and marks other applications as closed. Client role required.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/applications/{id}/update": {
+      "put": {
+        "summary": "Update an application's review status",
+        "description": "Updates the review status of an application (e.g., PENDING, APPROVED, REJECTED). Client role required.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "example": "APPROVED"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/applications/": {
+      "get": {
+        "summary": "List applications submitted by the authenticated user",
+        "description": "Returns the current user's job applications. Requires authentication.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/applications/{jobId}/applications": {
+      "get": {
+        "summary": "List applications for a job (client only)",
+        "description": "Returns applications for the specified job ID. Only the owning client can access. Requires authentication.",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}
